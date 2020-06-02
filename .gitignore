@@ -70,3 +70,7 @@ __src
 /example/src/**
 orion.json
 .DS_Store
+
+swagger.d.ts
+swagger.json
+generateApi.ts
