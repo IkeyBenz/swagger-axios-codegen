@@ -12,6 +12,7 @@ export function serviceHeader(options: ISwaggerOptions, basePath: string) {
   // tslint:disable
   /* eslint-disable */
   import axiosStatic, { AxiosInstance } from 'axios';
+  import { store } from '../store';
 
   const basePath = '${trimString(basePath, '/', 'right')}'
   ${classTransformerImport}
@@ -93,19 +94,25 @@ function requestHeader() {
 
   // Add default options
   export const serviceOptions: ServiceOptions = {
+    axios: axiosStatic,
   };
 
   // Instance selector
   export function axios(configs: IRequestConfig, resolve: (p: any) => void, reject: (p: any) => void): Promise<any> {
     if (serviceOptions.axios) {
-      return serviceOptions.axios.request(configs).then(res => {
-        resolve(res.data);
-      })
+      const { tokenData } = store.getState().auth;
+      configs.headers.Authorization = \`Bearer \${tokenData.access_token}\`;
+  
+      return serviceOptions.axios
+        .request(configs)
+        .then(res => {
+          resolve(res.data);
+        })
         .catch(err => {
           reject(err);
         });
     } else {
-      throw new Error('please inject yourself instance like axios  ')
+      throw new Error('please inject yourself instance like axios  ');
     }
   }
   
