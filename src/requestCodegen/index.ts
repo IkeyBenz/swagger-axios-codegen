@@ -1,4 +1,4 @@
-import { getMethodName, RemoveSpecialCharacters } from '../utils'
+import { getYoungestPath, RemoveSpecialCharacters } from '../utils'
 import { IPaths } from '../swaggerInterfaces'
 import { getRequestParameters } from './getRequestParameters'
 import { getResponseType } from './getResponseType'
@@ -24,11 +24,17 @@ export function requestCodegen(paths: IPaths, isV3: boolean, options: ISwaggerOp
 
   if (!!paths)
     for (const [path, request] of Object.entries(paths)) {
-      let methodName = getMethodName(path)
+      let endpoint = getYoungestPath(path);
+      
       for (const [method, reqProps] of Object.entries(request)) {
-        methodName = options.methodNameMode === 'operationId' ? reqProps.operationId : methodName
+        const methodName = {
+          operationId: reqProps.operationId,
+          path: endpoint,
+          summary: reqProps.summary,
+        }[options.methodNameMode];
+        // methodName = options.methodNameMode === 'operationId' ? reqProps.operationId : 
         if (!methodName) {
-          // console.warn('method Name is null：', path);
+          console.warn('method Name is null：', path);
           continue;
         }
         const contentType = getContentType(reqProps, isV3)

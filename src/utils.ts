@@ -119,7 +119,7 @@ export function toBaseType(s: string, format?: string) {
   return result
 }
 
-export function getMethodName(path: string) {
+export function getYoungestPath(path: string) {
   const paths = path.split('/')
   for (let i = paths.length - 1; i >= 0; i--) {
     if (/\{.+\}/.test(paths[i]) === false) {
