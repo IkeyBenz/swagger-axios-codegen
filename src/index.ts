@@ -153,8 +153,8 @@ export async function codegen(params: ISwaggerOptions) {
     })
 
 
-    defsString = apiSource + defsString
-    writeFile(options.outputDir || '', 'index.defs.ts', format(defsString, options))
+    writeFile(options.outputDir || '', 'types.d.ts', format(defsString, options));
+    writeFile(options.outputDir || '', 'index.defs.ts', format(apiSource, options));
 
   } else if (options.include && options.include.length > 0) {
     // TODO: use filter plugin
