@@ -111,7 +111,7 @@ export async function codegen(params: ISwaggerOptions) {
       }
 
       text = serviceTemplate(className + options.serviceNameSuffix, text, uniqueImports)
-      writeFile(options.outputDir || '', className + 'Service.ts', format(text, options))
+      writeFile(options.outputDir || '', className + '.ts', format(text, options))
     })
 
     let defsString = ''
