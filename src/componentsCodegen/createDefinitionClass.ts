@@ -28,7 +28,7 @@ export function createDefinitionClass(
     if (isEnum) {
       let enumName = `Enum${className}${pascalcase(k)}`
       enums.push({
-        name: enumName, text: `export enum ${enumName}{
+        name: enumName, text: `declare enum ${enumName}{
         ${propType}
       }`})
       propType = isArray ? enumName + '[]' : enumName
@@ -47,7 +47,7 @@ export function createDefinitionClass(
       let types = propType.split(',')
       enums.push({
         name: typeName,
-        text: `export type ${typeName} = ${types.join(' | ')};`
+        text: `declare type ${typeName} = ${types.join(' | ')};`
       })
       propType = isArray ? typeName + '[]' : typeName
       ref = typeName
@@ -58,7 +58,7 @@ export function createDefinitionClass(
       let types = propType.split(',')
       enums.push({
         name: typeName,
-        text: `export type ${typeName} = ${types.join(' & ')};`
+        text: `declare type ${typeName} = ${types.join(' & ')};`
       })
       propType = isArray ? typeName + '[]' : typeName
       ref = typeName

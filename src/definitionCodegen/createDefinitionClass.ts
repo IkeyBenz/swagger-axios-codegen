@@ -28,7 +28,7 @@ export function createDefinitionClass(
     if (isEnum) {
       let enumName = `Enum${className}${pascalcase(k)}`
       enums.push({
-        name: enumName, text: `export enum ${enumName}{
+        name: enumName, text: `declare enum ${enumName}{
         ${propType}
       }`})
       propType = isArray ? enumName + '[]' : enumName

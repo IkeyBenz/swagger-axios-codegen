@@ -25,8 +25,7 @@ export function interfaceTemplate(
   return `
   ${importString}
 
-  export interface ${name} {
-
+  declare interface ${name} {
     ${props.map(p => classPropsTemplate(p.name, p.type, p.format, p.desc, !strictNullChecks, false, false)).join('')}
   }
   `
@@ -151,7 +150,7 @@ export function classConstructorTemplate(name: string) {
 /** 枚举 */
 export function enumTemplate(name: string, enumString: string, prefix?: string) {
   return `
-  export enum ${name}{
+  declare enum ${name}{
     ${enumString}
   }
   `
@@ -159,7 +158,7 @@ export function enumTemplate(name: string, enumString: string, prefix?: string) 
 
 export function typeTemplate(name: string, typeString: string, prefix?: string) {
   return `
-  export type ${name} = ${typeString};
+  declare type ${name} = ${typeString};
   `
 }
 
