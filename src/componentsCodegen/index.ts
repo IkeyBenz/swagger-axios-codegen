@@ -4,6 +4,7 @@ import { createDefinitionClass } from './createDefinitionClass'
 import { createDefinitionEnum } from './createDefinitionEnum'
 import { IDefinitionClasses, IDefinitionEnums } from '../baseInterfaces'
 
+/** For OpenAPI3 */
 export function componentsCodegen(definitions: IComponents) {
   let definitionModels: IDefinitionClasses = {}
   let definitionEnums: IDefinitionEnums = {}

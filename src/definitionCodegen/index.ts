@@ -4,6 +4,7 @@ import { createDefinitionClass } from './createDefinitionClass'
 import { createDefinitionEnum } from './createDefinitionEnum'
 import { IDefinitionClasses, IDefinitionEnums } from '../baseInterfaces'
 
+/** For OpenAPI2 */
 export function definitionsCodeGen(definitions: IDefinitions) {
   let definitionModels: IDefinitionClasses = {}
   let definitionEnums: IDefinitionEnums = {}
