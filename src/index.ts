@@ -105,12 +105,13 @@ export async function codegen(params: ISwaggerOptions) {
 
       // unique import
       const uniqueImports: string[] = []
-      allImport.push(...getDefinedGenericTypes(), 'IRequestOptions', 'IRequestConfig', 'getConfigs', 'axios')
+
+      allImport.push('IRequestOptions', 'IRequestConfig', 'getConfigs', 'axios')
       for (const item of allImport) {
         if (!uniqueImports.includes(item)) uniqueImports.push(item)
       }
-
-      text = serviceTemplate(className + options.serviceNameSuffix, text, uniqueImports)
+      const _imports = ['getConfigs', 'axios', 'IRequestOptions', 'IRequestConfig'];
+      text = serviceTemplate(className + options.serviceNameSuffix, text, _imports)
       writeFile(options.outputDir || '', className + '.ts', format(text, options))
     })
 
@@ -153,7 +154,7 @@ export async function codegen(params: ISwaggerOptions) {
     })
 
 
-    writeFile(options.outputDir || '', 'types.d.ts', format(defsString, options));
+    writeFile(path.join(options.outputDir || '', '..'), 'swagger.d.ts', format(defsString, options));
     writeFile(options.outputDir || '', 'index.defs.ts', format(apiSource, options));
 
   } else if (options.include && options.include.length > 0) {
