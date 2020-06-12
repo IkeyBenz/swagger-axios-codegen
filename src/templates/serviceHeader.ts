@@ -12,9 +12,14 @@ export function serviceHeader(options: ISwaggerOptions, basePath: string) {
   // tslint:disable
   /* eslint-disable */
   import axiosStatic, { AxiosInstance } from 'axios';
+  import { encode as base64Encode } from 'base-64';
   import { store } from '../store';
+  import { encodeForm } from '../util/apiHelper';
+  import { updateAuth } from '../store/actions/auth';
 
   const basePath = '${trimString(basePath, '/', 'right')}'
+  const client_id = 'mergg_mobile';
+  const client_secret = 'secret';
   ${classTransformerImport}
 
   export interface IRequestOptions {
@@ -100,8 +105,13 @@ function requestHeader() {
   // Instance selector
   export function axios(configs: IRequestConfig, resolve: (p: any) => void, reject: (p: any) => void): Promise<any> {
     if (serviceOptions.axios) {
-      const { tokenData } = store.getState().auth;
-      configs.headers.Authorization = \`Bearer \${tokenData.access_token}\`;
+      const {
+        auth: { tokenData }
+      } = store.getState() as RootState;
+
+      if (tokenData) {
+        configs.headers.Authorization = \`Bearer \${tokenData.access_token}\`;
+      }
   
       return serviceOptions.axios
         .request(configs)
@@ -109,6 +119,12 @@ function requestHeader() {
           resolve(res.data);
         })
         .catch(err => {
+          // Had a token but expired, refresh it and remake intended api call
+          if (err.response.status === 401 && tokenData) {
+            return refreshAccessToken(tokenData.refresh_token).then(() => {
+              return axios(configs, resolve, reject);
+            });
+          }
           reject(err);
         });
     } else {
@@ -116,6 +132,37 @@ function requestHeader() {
     }
   }
   
+  const refreshAccessToken = (() => {
+    let currRequest: Promise<void> | null = null;
+    const oneAtATimeRefreshToken = (refreshToken: string) => {
+      if (!currRequest) {
+        console.log('refreshing token!', refreshToken);
+        currRequest = axiosStatic.post(
+          \`\${basePath}/oauth/token\`,
+          encodeForm({
+            grant_type: 'refresh_token',
+            refresh_token: refreshToken,
+          }),
+          {
+            headers: {
+              Authorization: \`Basic \${base64Encode(
+                \`\${client_id}:\${client_secret}\`,
+              )}\`,
+              'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+              Accept: 'application/json',
+            },
+          },
+        );
+      }
+      return currRequest
+        .then(newTokenData => {
+          store.dispatch(updateAuth(newTokenData));
+        })
+        .finally(() => (currRequest = null));
+    };
+    return oneAtATimeRefreshToken;
+  })();
+
   export function getConfigs(method: string, contentType: string, url: string,options: any):IRequestConfig {
     url = basePath + url
     const configs: IRequestConfig = { ...options, method, url };
