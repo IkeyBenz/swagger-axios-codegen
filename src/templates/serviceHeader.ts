@@ -133,7 +133,7 @@ function requestHeader() {
   }
   
   const refreshAccessToken = (() => {
-    let currRequest: Promise<void> | null = null;
+    let currRequest: Promise<any> | null = null;
     const oneAtATimeRefreshToken = (refreshToken: string) => {
       if (!currRequest) {
         console.log('refreshing token!', refreshToken);
@@ -155,8 +155,8 @@ function requestHeader() {
         );
       }
       return currRequest
-        .then(newTokenData => {
-          store.dispatch(updateAuth(newTokenData));
+        .then(res => {
+          store.dispatch(updateAuth(res.data));
         })
         .finally(() => (currRequest = null));
     };
