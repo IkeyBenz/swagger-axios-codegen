@@ -3,20 +3,9 @@ const { codegen } = require('./src')
 const colors = require('colors')
 const fs = require('fs')
 const diff = require('diff')
-const hoverRepoDir = 'E:/Hover/mergg-react-native-refactored/'
+const { exec } = require('child_process');
 
-const outputSplit = '>---------------------------------------------------------'
 
-const getLineNumbersFromFileData = data => {
-  const lines = data.toString().split('\n')
-  const ret = {}
-  let ln = 1
-  lines.forEach(line => {
-    ret[line] = ln
-    ln += 1
-  })
-  return ret
-}
 
 const PRETTIER_CONFIG = {
   bracketSpacing: true,
@@ -40,7 +29,26 @@ codegen({
   strictNullChecks: true,
   modelMode: 'interface',
   format: (text: string) => prettier.format(text, PRETTIER_CONFIG)
-})
+});
+
+exec('eslint --fix ./api2/*.ts', (err, stdout, stderr) => {
+  console.log('Ran eslint:', stdout);
+});
+
+// const hoverRepoDir = 'E:/Hover/mergg-react-native-refactored/'
+
+// const outputSplit = '>---------------------------------------------------------'
+
+// const getLineNumbersFromFileData = data => {
+//   const lines = data.toString().split('\n')
+//   const ret = {}
+//   let ln = 1
+//   lines.forEach(line => {
+//     ret[line] = ln
+//     ln += 1
+//   })
+//   return ret
+// }
 
 // const oldApiDir = hoverRepoDir + 'src/api2/'
 // const oldDecDir = hoverRepoDir + 'src/swagger.d.ts'
