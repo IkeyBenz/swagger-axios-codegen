@@ -1,15 +1,19 @@
 import camelcase from 'camelcase';
-import {IPropDef, ISwaggerOptions} from '../baseInterfaces';
-import {toBaseType, isDefinedGenericTypes, getDefinedGenericTypes} from '../utils';
+import { IPropDef, ISwaggerOptions } from '../baseInterfaces';
+import {
+  toBaseType,
+  isDefinedGenericTypes,
+  getDefinedGenericTypes,
+} from '../utils';
 
 const baseTypes = ['string', 'number', 'object', 'boolean', 'any'];
 
 /** 类模板 */
 export function interfaceTemplate(
-    name: string,
-    props: IPropDef[],
-    imports: string[],
-    strictNullChecks: boolean = true,
+  name: string,
+  props: IPropDef[],
+  imports: string[],
+  strictNullChecks: boolean = true,
 ) {
   if (isDefinedGenericTypes(name)) {
     // 已经定义过的interface不再生成
@@ -17,36 +21,50 @@ export function interfaceTemplate(
   }
   // 所有的引用
   const importString = imports
-      .map((imp) => {
-        return `import { ${imp} } from '../definitions/${imp}'\n`;
-      })
-      .join('');
+    .map(imp => {
+      return `import { ${imp} } from '../definitions/${imp}'\n`;
+    })
+    .join('');
 
   return `
   ${importString}
 
   declare interface ${name} {
-    ${props.map((p) => classPropsTemplate(p.name, p.type, p.format, p.desc, !strictNullChecks, false, false)).join('')}
+    ${props
+      .map(p =>
+        classPropsTemplate(
+          p.name,
+          p.type,
+          p.format,
+          p.desc,
+          !strictNullChecks,
+          false,
+          false,
+        ),
+      )
+      .join('')}
   }
   `;
 }
 
 /** 类模板 */
 export function classTemplate(
-    name: string,
-    props: IPropDef[],
-    imports: string[],
-    strictNullChecks: boolean = true,
-    useClassTransformer: boolean,
-    generateValidationModel: boolean,
+  name: string,
+  props: IPropDef[],
+  imports: string[],
+  strictNullChecks: boolean = true,
+  useClassTransformer: boolean,
+  generateValidationModel: boolean,
 ) {
   // 所有的引用
-  const mappedImports = imports.map((imp) => {
+  const mappedImports = imports.map(imp => {
     return `import { ${imp} } from '../definitions/${imp}'\n`;
   });
 
   if (useClassTransformer && imports.length > 0) {
-    mappedImports.push(`import { Type, Transform, Expose } from 'class-transformer'\n`);
+    mappedImports.push(
+      `import { Type, Transform, Expose } from 'class-transformer'\n`,
+    );
   }
   const importString = mappedImports.join('');
 
@@ -56,21 +74,21 @@ export function classTemplate(
   export class ${name} {
 
     ${props
-      .map((p) =>
+      .map(p =>
         classPropsTemplate(
-            p.name,
-            p.type,
-            p.format,
-            p.desc,
-            !strictNullChecks,
-            useClassTransformer,
-            p.isEnum || p.isType,
+          p.name,
+          p.type,
+          p.format,
+          p.desc,
+          !strictNullChecks,
+          useClassTransformer,
+          p.isEnum || p.isType,
         ),
       )
       .join('')}
 
     constructor(data: (undefined | any) = {}){
-        ${props.map((p) => classConstructorTemplate(p.name)).join('')}
+        ${props.map(p => classConstructorTemplate(p.name)).join('')}
     }
     ${generateValidationModel ? classValidationModelTemplate(props) : ''}
   }
@@ -79,13 +97,13 @@ export function classTemplate(
 
 /** 类属性模板 */
 export function classPropsTemplate(
-    filedName: string,
-    type: string,
-    format: string,
-    description: string,
-    canNull: boolean,
-    useClassTransformer: boolean,
-    isType: boolean,
+  filedName: string,
+  type: string,
+  format: string,
+  description: string,
+  canNull: boolean,
+  useClassTransformer: boolean,
+  isType: boolean,
 ) {
   /**
    * eg:
@@ -109,7 +127,10 @@ export function classPropsTemplate(
   }
 }
 
-export function propValidationModelTemplate(filedName: string, validationModel: object) {
+export function propValidationModelTemplate(
+  filedName: string,
+  validationModel: object,
+) {
   /**
    * eg:
    *   fieldName: { required: true, maxLength: 50 }
@@ -125,14 +146,18 @@ export function classValidationModelTemplate(props: IPropDef[]) {
   return `
     public static validationModel = {
       ${props
-      .filter((p) => p.validationModel !== null)
-      .map((p) => propValidationModelTemplate(p.name, p.validationModel))
-      .join(',\n')}
+        .filter(p => p.validationModel !== null)
+        .map(p => propValidationModelTemplate(p.name, p.validationModel))
+        .join(',\n')}
     }
   `;
 }
 
-export function classTransformTemplate(type: string, format: string, isType: boolean) {
+export function classTransformTemplate(
+  type: string,
+  format: string,
+  isType: boolean,
+) {
   const decorators: string[] = [`@Expose()`];
   const nonArrayType = type.replace('[', '').replace(']', '');
   /* ignore interfaces */
@@ -148,7 +173,11 @@ export function classConstructorTemplate(name: string) {
 }
 
 /** 枚举 */
-export function enumTemplate(name: string, enumString: string, prefix?: string) {
+export function enumTemplate(
+  name: string,
+  enumString: string,
+  prefix?: string,
+) {
   return `
   declare enum ${name}{
     ${enumString}
@@ -156,27 +185,35 @@ export function enumTemplate(name: string, enumString: string, prefix?: string) 
   `;
 }
 
-export function typeTemplate(name: string, typeString: string, prefix?: string) {
+export function typeTemplate(
+  name: string,
+  typeString: string,
+  prefix?: string,
+) {
   return `
   declare type ${name} = ${typeString};
   `;
 }
 
 interface IRequestSchema {
-  summary: string
-  parameters: string
-  responseType: string
-  method: string
-  contentType: string
-  path: string
-  pathReplace: string
-  parsedParameters: any
-  formData: string
-  requestBody: any
+  summary: string;
+  parameters: string;
+  responseType: string;
+  method: string;
+  contentType: string;
+  path: string;
+  pathReplace: string;
+  parsedParameters: any;
+  formData: string;
+  requestBody: any;
 }
 
 /** requestTemplate */
-export function requestTemplate(name: string, requestSchema: IRequestSchema, options: any) {
+export function requestTemplate(
+  name: string,
+  requestSchema: IRequestSchema,
+  options: any,
+) {
   const {
     summary = '',
     parameters = '',
@@ -189,16 +226,16 @@ export function requestTemplate(name: string, requestSchema: IRequestSchema, opt
     formData = '',
     requestBody = null,
   } = requestSchema;
-  const {useClassTransformer} = options;
-  const {queryParameters = [], bodyParameter = []} = parsedParameters;
+  const { useClassTransformer } = options;
+  const { queryParameters = [], bodyParameter = [] } = parsedParameters;
   const nonArrayType = responseType.replace('[', '').replace(']', '');
   const isArrayType = responseType.indexOf('[') > 0;
   const transform = useClassTransformer && baseTypes.indexOf(nonArrayType) < 0;
-  const resolveString = transform ?
-    `(response: any${
-    isArrayType ? '[]' : ''
-    }) => resolve(plainToClass(${nonArrayType}, response, {strategy: 'excludeAll'}))` :
-    'resolve';
+  const resolveString = transform
+    ? `(response: any${
+        isArrayType ? '[]' : ''
+      }) => resolve(plainToClass(${nonArrayType}, response, {strategy: 'excludeAll'}))`
+    : 'resolve';
 
   return `
 /**
@@ -206,19 +243,24 @@ export function requestTemplate(name: string, requestSchema: IRequestSchema, opt
  */
 ${options.useStaticMethod ? 'static' : ''} ${camelcase(
     name,
-)}(${parameters}options:IRequestOptions={}):Promise<${responseType}> {
+  )}(${parameters}options:IRequestOptions={}):Promise<${responseType}> {
   return new Promise((resolve, reject) => {
     let url = '${path}'
     ${pathReplace}
     const configs:IRequestConfig = getConfigs('${method}', '${contentType}', url, options)
-    ${parsedParameters && queryParameters.length > 0 ? 'configs.params = {' + queryParameters.join(',') + '}' : ''}
+    ${
+      parsedParameters && queryParameters.length > 0
+        ? 'configs.params = {' + queryParameters.join(',') + '}'
+        : ''
+    }
     let data = ${
-    parsedParameters && bodyParameter && bodyParameter.length > 0 ? // ? bodyParameters.length === 1 && bodyParameters[0].startsWith('[') ? bodyParameters[0] : '{' + bodyParameters.join(',') + '}'
-      bodyParameter :
-      !!requestBody ?
-        'params.body' :
-        'null'
-}
+      parsedParameters && bodyParameter && bodyParameter.length > 0
+        ? // ? bodyParameters.length === 1 && bodyParameters[0].startsWith('[') ? bodyParameters[0] : '{' + bodyParameters.join(',') + '}'
+          bodyParameter
+        : !!requestBody
+        ? 'params.body'
+        : 'null'
+    }
     ${contentType === 'multipart/form-data' ? formData : ''}
     configs.data = data;
     axios(configs, ${resolveString}, reject);
@@ -227,12 +269,17 @@ ${options.useStaticMethod ? 'static' : ''} ${camelcase(
 }
 
 /** serviceTemplate */
-export function serviceTemplate(name: string, body: string, imports: string[] = null) {
+export function serviceTemplate(
+  name: string,
+  body: string,
+  imports: string[] = null,
+) {
   // add base imports
-  const mappedImports = !imports ? '' : `import { ${imports.join(',')}, } from './index.defs'\n`;
+  const mappedImports = !imports
+    ? ''
+    : `import { ${imports.join(',')}, } from './index.defs'\n`;
 
   // }
-
 
   return `
 

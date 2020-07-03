@@ -109,7 +109,7 @@ export async function codegen(params: ISwaggerOptions) {
       for (const item of allImport) {
         if (!uniqueImports.includes(item)) uniqueImports.push(item);
       }
-      const _imports = ['getConfigs', 'axios'];
+      const _imports = ['getConfigs', 'axios', 'IRequestOptions', 'IRequestConfig'];
       text = serviceTemplate(className + options.serviceNameSuffix, text, _imports);
       writeFile(options.outputDir || '', className + '.ts', format(text, options));
     });

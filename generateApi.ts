@@ -12,7 +12,8 @@ const PRETTIER_CONFIG = {
   jsxBracketSameLine: true,
   singleQuote: true,
   trailingComma: 'all',
-  parser: 'typescript'
+  parser: 'typescript',
+  tabWidth: 2,
 }
 
 codegen({

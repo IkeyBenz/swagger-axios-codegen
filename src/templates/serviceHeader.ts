@@ -1,25 +1,31 @@
-import * as fs from 'fs'
-import * as path from 'path'
-import { ISwaggerOptions } from "../baseInterfaces";
-import { abpGenericTypeDefinition, universalGenericTypeDefinition } from './genericTypeDefinitionTemplate';
+import * as fs from 'fs';
+import * as path from 'path';
+import { ISwaggerOptions } from '../baseInterfaces';
+import {
+  abpGenericTypeDefinition,
+  universalGenericTypeDefinition,
+} from './genericTypeDefinitionTemplate';
 import { trimString } from '../utils';
 
 export function serviceHeader(options: ISwaggerOptions, basePath: string) {
   const classTransformerImport = options.useClassTransformer
     ? `import { Expose, Transform, Type, plainToClass } from 'class-transformer';
-  ` : '';
+  `
+    : '';
   return `/** Generate by swagger-axios-codegen */
-  // tslint:disable
-  /* eslint-disable */
+
   import axiosStatic, { AxiosInstance } from 'axios';
   import { encode as base64Encode } from 'base-64';
+  import Config from 'react-native-config';
+
   import { store } from '../store';
   import { encodeForm } from '../util/apiHelper';
   import { updateAuth } from '../store/actions/auth';
 
-  const basePath = '${trimString(basePath, '/', 'right')}'
+  const basePath = Config.API_URL;
   const client_id = 'mergg_mobile';
   const client_secret = 'secret';
+  
   ${classTransformerImport}
 
   export interface IRequestOptions {
@@ -46,10 +52,10 @@ export function serviceHeader(options: ISwaggerOptions, basePath: string) {
   `;
 }
 
-
-
-export function customerServiceHeader(options: ISwaggerOptions, basePath: string) {
-
+export function customerServiceHeader(
+  options: ISwaggerOptions,
+  basePath: string,
+) {
   return `/** Generate by swagger-axios-codegen */
   // tslint:disable
   /* eslint-disable */
@@ -91,7 +97,7 @@ export function customerServiceHeader(options: ISwaggerOptions, basePath: string
 
   ${requestHeader()}
   ${definitionHeader(options.extendDefinitionFile)}
-  `
+  `;
 }
 
 function requestHeader() {
@@ -172,16 +178,16 @@ function requestHeader() {
     };
     return configs
   }
-  `
+  `;
 }
 
 function definitionHeader(fileDir: string | undefined) {
-  let fileStr = '// empty '
+  let fileStr = '// empty ';
   if (!!fileDir) {
-    console.log('extendDefinitionFile url : ', path.resolve(fileDir))
+    console.log('extendDefinitionFile url : ', path.resolve(fileDir));
     if (fs.existsSync(path.resolve(fileDir))) {
-      const buffs = fs.readFileSync(path.resolve(fileDir))
-      fileStr = buffs.toString('utf8')
+      const buffs = fs.readFileSync(path.resolve(fileDir));
+      fileStr = buffs.toString('utf8');
     }
   }
 
@@ -190,5 +196,5 @@ function definitionHeader(fileDir: string | undefined) {
   ${abpGenericTypeDefinition()}
   // customer definition
   ${fileStr}
-  `
+  `;
 }
