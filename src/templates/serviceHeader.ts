@@ -124,11 +124,17 @@ function requestHeader() {
         .then(res => {
           resolve(res.data);
         })
-        .catch(err => {
+         .catch(err => {
           // Had a token but expired, refresh it and remake intended api call
-          if (err.response.status === 401 && tokenData) {
+          if (
+            err.response.status === 401 &&
+            tokenData &&
+            tokenData.refresh_token
+          ) {
             return refreshAccessToken(tokenData.refresh_token).then(() => {
-              return axios(configs, resolve, reject);
+              return new Promise(r => setTimeout(r, 500)).then(() =>
+                axios(configs, resolve, reject),
+              );
             });
           }
           reject(err);
