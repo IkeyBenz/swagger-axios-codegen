@@ -1,20 +1,9 @@
-const prettier = require('prettier')
-const { codegen } = require('./src')
-const colors = require('colors')
-const fs = require('fs')
-const diff = require('diff')
+const prettier = require('prettier');
+const { codegen } = require('./src');
+const colors = require('colors');
+const fs = require('fs');
+const diff = require('diff');
 const { exec } = require('child_process');
-
-
-
-const PRETTIER_CONFIG = {
-  bracketSpacing: true,
-  jsxBracketSameLine: true,
-  singleQuote: true,
-  trailingComma: 'all',
-  parser: 'typescript',
-  tabWidth: 2,
-}
 
 codegen({
   methodNameMode: 'summary',
@@ -29,10 +18,9 @@ codegen({
   extendDefinitionFile: undefined,
   strictNullChecks: true,
   modelMode: 'interface',
-  format: (text: string) => prettier.format(text, PRETTIER_CONFIG)
 });
 
-exec('eslint --fix ./api2/*.ts', (err, stdout, stderr) => {
+exec('npm run lint-api', (err, stdout, stderr) => {
   console.log('Ran eslint:', stdout);
 });
 

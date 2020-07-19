@@ -22,7 +22,8 @@
     "precommit": "prettier --write --config .prettierrc ./src/*.ts",
     "start": "node ./dist/index",
     "watch": "tsc --watch -p ./src ",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "lint-api": "eslint --fix ./api2/*.ts"
   },
   "dependencies": {
     "axios": "^0.19.0",
