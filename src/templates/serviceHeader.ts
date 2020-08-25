@@ -16,13 +16,12 @@ export function serviceHeader(options: ISwaggerOptions, basePath: string) {
 
   import axiosStatic, { AxiosInstance } from 'axios';
   import { encode as base64Encode } from 'base-64';
-  import Config from 'react-native-config';
 
+  import { API_URL as basePath } from '../env.json';
   import { store } from '../store';
   import { encodeForm } from '../util/apiHelper';
   import { updateAuth } from '../store/actions/auth';
 
-  const basePath = Config.API_URL;
   const client_id = 'mergg_mobile';
   const client_secret = 'secret';
   
