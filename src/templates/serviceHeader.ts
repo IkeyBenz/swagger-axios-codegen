@@ -120,10 +120,10 @@ function requestHeader() {
   
       return serviceOptions.axios
         .request(configs)
-        .then(res => {
+        .then((res) => {
           resolve(res.data);
         })
-         .catch(err => {
+         .catch((err) => {
           // Had a token but expired, refresh it and remake intended api call
           if (
             err.response.status === 401 &&
@@ -136,7 +136,7 @@ function requestHeader() {
               );
             });
           }
-          reject(err);
+          reject(new Error(err.response.data.message));
         });
     } else {
       throw new Error('please inject yourself instance like axios  ');
@@ -166,7 +166,7 @@ function requestHeader() {
         );
       }
       return currRequest
-        .then(res => {
+        .then((res) => {
           store.dispatch(updateAuth(res.data));
         })
         .finally(() => (currRequest = null));
