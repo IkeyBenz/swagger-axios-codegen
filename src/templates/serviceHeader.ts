@@ -20,7 +20,7 @@ export function serviceHeader(options: ISwaggerOptions, basePath: string) {
   import { API_URL as basePath } from '../env.json';
   import { store } from '../store';
   import { encodeForm } from '../util/apiHelper';
-  import { updateAuth } from '../store/actions/auth';
+  import { insertTokenData } from '../store/actions/auth';
 
   const client_id = 'mergg_mobile';
   const client_secret = 'secret';
@@ -112,7 +112,7 @@ function requestHeader() {
     if (serviceOptions.axios) {
       const {
         auth: { tokenData }
-      } = store.getState() as RootState;
+      } = store.getState();
 
       if (tokenData) {
         configs.headers.Authorization = \`Bearer \${tokenData.access_token}\`;
@@ -131,7 +131,7 @@ function requestHeader() {
             tokenData.refresh_token
           ) {
             return refreshAccessToken(tokenData.refresh_token).then(() => {
-              return new Promise(r => setTimeout(r, 500)).then(() =>
+              return new Promise((r) => setTimeout(r, 500)).then(() =>
                 axios(configs, resolve, reject),
               );
             });
@@ -144,7 +144,7 @@ function requestHeader() {
   }
   
   const refreshAccessToken = (() => {
-    let currRequest: Promise<any> | null = null;
+    let currRequest: Promise<{ data: OAuthTokenDto }> | null = null;
     const oneAtATimeRefreshToken = (refreshToken: string) => {
       if (!currRequest) {
         console.log('refreshing token!', refreshToken);
@@ -167,7 +167,7 @@ function requestHeader() {
       }
       return currRequest
         .then((res) => {
-          store.dispatch(updateAuth(res.data));
+          store.dispatch(insertTokenData(res.data));
         })
         .finally(() => (currRequest = null));
     };
