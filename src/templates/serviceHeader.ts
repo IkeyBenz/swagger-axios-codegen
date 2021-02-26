@@ -124,6 +124,11 @@ function requestHeader() {
           resolve(res.data);
         })
          .catch((err) => {
+          // network error does not have a status
+          if (!err.response) {
+            reject(new Error('Network Error'));
+          }
+  
           // Had a token but expired, refresh it and remake intended api call
           if (
             err.response.status === 401 &&
