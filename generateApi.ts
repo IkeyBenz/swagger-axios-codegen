@@ -7,6 +7,7 @@ const { exec } = require('child_process');
 const axios = require('axios');
 
 function getApiJson() {
+  console.log('Retrieving api swagger.json from devapi.mer.gg...');
   return axios.get('https://devapi.mer.gg/v2/api-docs').then(res => res.data);
 }
 
@@ -27,7 +28,15 @@ async function generateClientSideApi() {
   });
 
   exec('npm run lint-api', (err, stdout, stderr) => {
-    console.log('Ran eslint:', stdout);
+    console.log('Ran eslint\n');
+    console.log('Api was generated in ./api2/');
+    console.log('Types declaration generated in ./swagger.d.ts');
+    console.log(
+      '\nCopy over the contents of ./api2/ into mergg-react-native-refactored/src/api2',
+    );
+    console.log(
+      'Replace the current swagger.d.ts in there with the newly generated one as well\n',
+    );
   });
 }
 
